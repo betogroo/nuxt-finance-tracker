@@ -17,7 +17,7 @@
 </script>
 
 <template>
-  <div class="container mx-auto px-2 max-w-4xl bg-slate-100">
+  <div class="container mx-auto px-2 max-w-4xl">
     <AppHeader />
     <main class="my-10">
       <slot />
