@@ -25,7 +25,7 @@
   </div>
 </template>
 
-<style>
+<style lang="css">
   /* Set the font family for the entire site */
   body {
     font-family: 'Inter';

@@ -25,32 +25,32 @@
     class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 sm:gap-16 mb-10"
   >
     <Trend
-      color="green"
       title="Income"
-      :amount="4000"
-      :last-amount="3000"
+      color="green"
+      :amount="1"
+      :last-amount="2"
+      :loading="false"
+    />
+    <Trend
+      title="Expense"
+      color="red"
+      :amount="2"
+      :last-amount="1"
+      :loading="false"
+    />
+    <Trend
+      color="green"
+      title="Investments"
+      :amount="2500"
+      :last-amount="2750"
       :loading="false"
     />
     <Trend
       color="red"
-      title="Income"
-      :amount="4000"
-      :last-amount="3000"
+      title="Saving"
+      :amount="0"
+      :last-amount="0"
       :loading="false"
-    />
-    <Trend
-      color="green"
-      title="Income"
-      :amount="4000"
-      :last-amount="3000"
-      :loading="false"
-    />
-    <Trend
-      color="red"
-      title="Income"
-      :amount="4000"
-      :last-amount="3000"
-      :loading="true"
     />
   </section>
 </template>
