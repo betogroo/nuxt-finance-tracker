@@ -27,15 +27,15 @@
     <Trend
       title="Income"
       color="green"
-      :amount="1"
-      :last-amount="2"
+      :amount="4000"
+      :last-amount="3000"
       :loading="false"
     />
     <Trend
       title="Expense"
       color="red"
-      :amount="2"
-      :last-amount="1"
+      :amount="3000"
+      :last-amount="1523"
       :loading="false"
     />
     <Trend
@@ -52,5 +52,11 @@
       :last-amount="0"
       :loading="false"
     />
+  </section>
+  <section>
+    <Transaction :amount="3500" />
+    <Transaction :amount="3500" />
+    <Transaction :amount="3500" />
+    <Transaction :amount="3500" />
   </section>
 </template>
