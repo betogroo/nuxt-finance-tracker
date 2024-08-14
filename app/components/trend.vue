@@ -15,6 +15,8 @@
       ? 'i-heroicons-arrow-trending-up'
       : 'i-heroicons-arrow-trending-down',
   )
+
+  const { currency } = useCurrency(amount)
   const percentTrend = computed(() => {
     if (amount === 0 || lastAmount === 0) return '∞%'
     /* const bigger = Math.max(amount, lastAmount)
@@ -41,7 +43,7 @@
         class="h-8 w-full"
         v-if="loading"
       />
-      <div v-else>{{ amount }}</div>
+      <div v-else>{{ currency }}</div>
     </div>
     <div>
       <USkeleton
