@@ -4,6 +4,7 @@
     requiresAuth: true,
     order: 1,
     title: 'About',
+    icon: 'i-mdi-information',
   })
 </script>
 

@@ -6,6 +6,7 @@
     order: 0,
     requiresAuth: true,
     title: 'Home',
+    icon: 'i-mdi-home',
   })
 
   const selectedView = ref(transactionViewOptions[2])
