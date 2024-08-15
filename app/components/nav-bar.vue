@@ -13,8 +13,8 @@
 <template>
   <nav class="flex justify-end items-center space-x-2">
     <template
-      class="m-0 p-0"
       v-for="{ label, to, icon } in navBarRoutes"
+      :key="to"
     >
       <UTooltip
         class="text-2xl size-6"
