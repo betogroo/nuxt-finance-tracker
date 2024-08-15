@@ -10,6 +10,22 @@
   })
 
   const selectedView = ref(transactionViewOptions[2])
+
+  const supabase = useSupabaseClient()
+
+  /* let { data: transactions, error } = await supabase
+    .from('transactions')
+    .select('*') */
+  const transactions = ref([])
+  const { data, status } = await useAsyncData('transactions', async () => {
+    const { data, error } = await supabase.from('transactions').select('*')
+
+    if (error) return []
+    return data
+  })
+  transactions.value = data.value
+
+  console.log(data)
 </script>
 
 <template>
@@ -55,9 +71,10 @@
     />
   </section>
   <section>
-    <Transaction :amount="3500" />
-    <Transaction :amount="3500" />
-    <Transaction :amount="3500" />
-    <Transaction :amount="3500" />
+    <Transaction
+      v-for="transaction in transactions"
+      :key="transaction.id"
+      :amount="transaction.amount"
+    />
   </section>
 </template>
