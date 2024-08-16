@@ -1,6 +1,6 @@
 <script setup lang="ts">
   import { transactionViewOptions } from '~/constants'
-  import type { Transaction } from '~/models/finace-tracker'
+  import type { Transaction } from '~/models/finance-tracker'
 
   definePageMeta({
     showInNavBar: true,
