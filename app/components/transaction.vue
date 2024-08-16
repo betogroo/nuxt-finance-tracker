@@ -5,7 +5,7 @@
     transaction: Transaction
   }
   const props = defineProps<Props>()
-  const { id, created_at, amount, category, description } = toRefs(
+  const { id, created_at, type, amount, category, description } = toRefs(
     props.transaction,
   )
 
@@ -25,6 +25,16 @@
   ])
 
   const { currency } = useCurrency(amount.value)
+  //const isIncome = computed(() => type.value === 'Income')
+  const transactionTypeStyle = computed(() => {
+    const isIncome = type.value === 'Income'
+    return {
+      icon: isIncome
+        ? 'i-heroicons-arrow-up-right'
+        : 'i-heroicons-arrow-down-left',
+      color: isIncome ? 'text-green-600' : 'text-red-600',
+    }
+  })
 </script>
 
 <template>
@@ -34,8 +44,8 @@
     <div class="flex-center justify-between">
       <div class="flex-center space-x-1">
         <UIcon
-          name="i-heroicons-arrow-up-right"
-          class="text-green-600"
+          :name="transactionTypeStyle.icon"
+          :class="transactionTypeStyle.color"
         />
         <div>{{ description }}</div>
       </div>
@@ -49,7 +59,7 @@
     </div>
 
     <div class="flex-center justify-end space-x-2">
-      <div>{{ currency }}</div>
+      <div :class="transactionTypeStyle.color">{{ currency }}</div>
       <div>
         <UDropdown
           :items="items"
