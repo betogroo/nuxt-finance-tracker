@@ -15,8 +15,8 @@
   const supabase = useSupabaseClient()
 
   /* let { data: transactions, error } = await supabase
-    .from('transactions')
-    .select('*') */
+     .from('transactions')
+     .select('*') */
   const transactions = ref<Transaction[]>([])
   const { data, status } = await useAsyncData('transactions', async () => {
     const { data, error } = await supabase
@@ -26,12 +26,26 @@
 
     if (error || !data)
       throw new Error(
-        `Erro ao buscar as urna: ${error.message} (${error.code})`,
+        `Erro ao buscar a transação: ${error.message} (${error.code})`,
       )
-    transactions.value = data
+    return data || []
   })
+  transactions.value = data.value ?? []
 
-  console.log(transactions.value)
+  const transactionsGroupByDate = computed(() => {
+    let grouped: Record<string, Transaction[]> = {}
+
+    for (const transaction of transactions.value as Transaction[]) {
+      const date =
+        new Date(transaction.created_at!).toISOString().split('T')[0] || ''
+      if (!grouped[date]) {
+        grouped[date] = []
+      }
+      grouped[date].push(transaction)
+    }
+    return grouped
+  })
+  console.log(transactionsGroupByDate)
 </script>
 
 <template>
@@ -83,4 +97,5 @@
       :transaction="transaction"
     />
   </section>
+  <section>{{ JSON.stringify(transactionsGroupByDate) }}</section>
 </template>
