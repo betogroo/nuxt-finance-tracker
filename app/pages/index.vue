@@ -1,5 +1,6 @@
 <script setup lang="ts">
   import { transactionViewOptions } from '~/constants'
+  import type { Transaction } from '~/models/finace-tracker'
 
   definePageMeta({
     showInNavBar: true,
@@ -16,16 +17,21 @@
   /* let { data: transactions, error } = await supabase
     .from('transactions')
     .select('*') */
-  const transactions = ref([])
+  const transactions = ref<Transaction[]>([])
   const { data, status } = await useAsyncData('transactions', async () => {
-    const { data, error } = await supabase.from('transactions').select('*')
+    const { data, error } = await supabase
+      .from('transactions')
+      .select('*')
+      .returns<Transaction[]>()
 
-    if (error) return []
-    return data
+    if (error || !data)
+      throw new Error(
+        `Erro ao buscar as urna: ${error.message} (${error.code})`,
+      )
+    transactions.value = data
   })
-  transactions.value = data.value
 
-  console.log(data)
+  console.log(transactions.value)
 </script>
 
 <template>
@@ -74,7 +80,7 @@
     <Transaction
       v-for="transaction in transactions"
       :key="transaction.id"
-      :amount="transaction.amount"
+      :transaction="transaction"
     />
   </section>
 </template>

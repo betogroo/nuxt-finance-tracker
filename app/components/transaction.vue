@@ -1,9 +1,13 @@
 <script setup lang="ts">
+  import type { Transaction } from '~/models/finace-tracker'
+
   interface Props {
-    amount: number
+    transaction: Transaction
   }
   const props = defineProps<Props>()
-  const { amount } = props
+  const { id, created_at, amount, category, description } = toRefs(
+    props.transaction,
+  )
 
   const items = ref([
     [
@@ -20,7 +24,7 @@
     ],
   ])
 
-  const { currency } = useCurrency(amount)
+  const { currency } = useCurrency(amount.value)
 </script>
 
 <template>
@@ -33,9 +37,15 @@
           name="i-heroicons-arrow-up-right"
           class="text-green-600"
         />
-        <div>Salary</div>
+        <div>{{ description }}</div>
       </div>
-      <div><UBadge color="white">Category</UBadge></div>
+      <div>
+        <UBadge
+          v-if="category"
+          color="white"
+          >{{ category }}</UBadge
+        >
+      </div>
     </div>
 
     <div class="flex-center justify-end space-x-2">
