@@ -45,7 +45,6 @@
     }
     return grouped
   })
-  console.log(transactionsGroupByDate)
 </script>
 
 <template>
@@ -96,6 +95,17 @@
       :key="transaction.id"
       :transaction="transaction"
     />
+    <template v-for="(transactionsOnDay, date) in transactionsGroupByDate">
+      <DailyTransactionSummary
+        :date="date"
+        :transactions="transactionsOnDay"
+      />
+      <Transaction
+        v-for="transaction in transactionsOnDay"
+        :key="transaction.id"
+        :transaction="transaction"
+      />
+    </template>
   </section>
   <section>{{ JSON.stringify(transactionsGroupByDate) }}</section>
 </template>
