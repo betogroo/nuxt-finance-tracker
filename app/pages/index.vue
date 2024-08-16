@@ -49,7 +49,7 @@
 
 <template>
   <section class="flex justify-between items-center mb-0">
-    <h1 class="text-4xl font-extrabold">Sumary</h1>
+    <h1 class="text-4xl font-extrabold">Summary</h1>
     <div>
       <USelectMenu
         v-model="selectedView"
