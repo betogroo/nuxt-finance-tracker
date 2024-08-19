@@ -3,11 +3,14 @@
 
   interface Props {
     transaction: Transaction
+    isPending?: boolean
   }
   const props = defineProps<Props>()
-  const { id, created_at, type, amount, category, description } = toRefs(
-    props.transaction,
-  )
+  const $emit = defineEmits<{
+    'handle-delete': [transaction_id: number]
+  }>()
+
+  const { type, amount, category, description } = toRefs(props.transaction)
 
   const items = ref([
     [
@@ -19,7 +22,8 @@
       {
         label: 'Delete',
         icon: 'i-heroicons-trash-20-solid',
-        click: () => console.log('Delete'),
+        click: (transaction_id: number) =>
+          $emit('handle-delete', transaction_id),
       },
     ],
   ])
@@ -44,8 +48,8 @@
     <div class="flex-center justify-between">
       <div class="flex-center space-x-1">
         <UIcon
-          :name="transactionTypeStyle.icon"
           :class="transactionTypeStyle.color"
+          :name="transactionTypeStyle.icon"
         />
         <div>{{ description }}</div>
       </div>
@@ -67,8 +71,9 @@
         >
           <UButton
             color="white"
-            variant="ghost"
+            :loading="isPending"
             trailing-icon="i-heroicons-ellipsis-horizontal"
+            variant="ghost"
           />
         </UDropdown>
       </div>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
   import { transactionViewOptions } from '~/constants'
-  import type { Transaction } from '~/models/finance-tracker'
+  import useTransactions from '~/composables/useTransactions'
 
   definePageMeta({
     showInNavBar: true,
@@ -10,41 +10,26 @@
     icon: 'i-mdi-home',
   })
 
+  const {
+    isPending,
+    transactions,
+    transactionsGroupByDate,
+    fetchTransactions,
+    deleteTransaction,
+  } = useTransactions()
   const selectedView = ref(transactionViewOptions[2])
+  const transactionsRowIndex = ref(-1)
 
-  const supabase = useSupabaseClient()
+  const _deleteTransaction = async (id: number) => {
+    transactionsRowIndex.value = transactions.value.findIndex(
+      (item) => item.id === id,
+    )
+    console.log(id, transactionsRowIndex)
+    await deleteTransaction(id)
+    transactionsRowIndex.value = -1
+  }
 
-  /* let { data: transactions, error } = await supabase
-     .from('transactions')
-     .select('*') */
-  const transactions = ref<Transaction[]>([])
-  const { data, status } = await useAsyncData('transactions', async () => {
-    const { data, error } = await supabase
-      .from('transactions')
-      .select('*')
-      .returns<Transaction[]>()
-
-    if (error || !data)
-      throw new Error(
-        `Erro ao buscar a transação: ${error.message} (${error.code})`,
-      )
-    return data || []
-  })
-  transactions.value = data.value ?? []
-
-  const transactionsGroupByDate = computed(() => {
-    let grouped: Record<string, Transaction[]> = {}
-
-    for (const transaction of transactions.value as Transaction[]) {
-      const date =
-        new Date(transaction.created_at!).toISOString().split('T')[0] || ''
-      if (!grouped[date]) {
-        grouped[date] = []
-      }
-      grouped[date].push(transaction)
-    }
-    return grouped
-  })
+  await fetchTransactions()
 </script>
 
 <template>
@@ -61,41 +46,50 @@
     class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 sm:gap-16 mb-10"
   >
     <Trend
-      title="Income"
-      color="green"
       :amount="4000"
+      color="green"
       :last-amount="3000"
       :loading="false"
+      title="Income"
     />
     <Trend
-      title="Expense"
-      color="red"
       :amount="3000"
+      color="red"
       :last-amount="1523"
       :loading="false"
+      title="Expense"
     />
     <Trend
-      color="green"
-      title="Investments"
       :amount="2500"
+      color="green"
       :last-amount="2750"
       :loading="false"
+      title="Investments"
     />
     <Trend
-      color="red"
-      title="Saving"
       :amount="0"
+      color="red"
       :last-amount="0"
       :loading="false"
+      title="Saving"
     />
   </section>
   <section>
     <Transaction
-      v-for="transaction in transactions"
+      v-for="(transaction, i) in transactions"
       :key="transaction.id"
+      :is-pending="isPending && i === transactionsRowIndex"
       :transaction="transaction"
+      @handle-delete="_deleteTransaction(transaction.id!)"
     />
-    <template v-for="(transactionsOnDay, date) in transactionsGroupByDate">
+    <UDivider
+      class="my-6"
+      label="Por Datas"
+    />
+    <template
+      v-for="(transactionsOnDay, date) in transactionsGroupByDate"
+      :key="date"
+    >
       <DailyTransactionSummary
         :date="date"
         :transactions="transactionsOnDay"
@@ -107,5 +101,4 @@
       />
     </template>
   </section>
-  <section>{{ JSON.stringify(transactionsGroupByDate) }}</section>
 </template>

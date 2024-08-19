@@ -11,8 +11,8 @@
     <p>Não encontramos a página "{{ fullPath }}".</p>
     <UButton
       class="mt-4"
-      to="/"
       color="red"
+      to="/"
       >Voltar para a página principal</UButton
     >
   </div>
