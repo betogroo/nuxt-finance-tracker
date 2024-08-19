@@ -1,6 +1,6 @@
 <script setup lang="ts">
   import { transactionViewOptions } from '~/constants'
-  import type { Transaction } from '~/models/finance-tracker'
+  import useTransactions from '~/composables/useTransactions'
 
   definePageMeta({
     showInNavBar: true,
@@ -10,41 +10,26 @@
     icon: 'i-mdi-home',
   })
 
+  const {
+    isPending,
+    transactions,
+    transactionsGroupByDate,
+    fetchTransactions,
+    deleteTransaction,
+  } = useTransactions()
   const selectedView = ref(transactionViewOptions[2])
+  const transactionsRowIndex = ref(-1)
 
-  const supabase = useSupabaseClient()
+  const _deleteTransaction = async (id: number) => {
+    transactionsRowIndex.value = transactions.value.findIndex(
+      (item) => item.id === id,
+    )
+    console.log(id, transactionsRowIndex)
+    await deleteTransaction(id)
+    transactionsRowIndex.value = -1
+  }
 
-  /* let { data: transactions, error } = await supabase
-     .from('transactions')
-     .select('*') */
-  const transactions = ref<Transaction[]>([])
-  const { data } = await useAsyncData('transactions', async () => {
-    const { data, error } = await supabase
-      .from('transactions')
-      .select('*')
-      .returns<Transaction[]>()
-
-    if (error || !data)
-      throw new Error(
-        `Erro ao buscar a transação: ${error.message} (${error.code})`,
-      )
-    return data || []
-  })
-  transactions.value = data.value ?? []
-
-  const transactionsGroupByDate = computed(() => {
-    const grouped: Record<string, Transaction[]> = {}
-
-    for (const transaction of transactions.value as Transaction[]) {
-      const date =
-        new Date(transaction.created_at!).toISOString().split('T')[0] || ''
-      if (!grouped[date]) {
-        grouped[date] = []
-      }
-      grouped[date].push(transaction)
-    }
-    return grouped
-  })
+  await fetchTransactions()
 </script>
 
 <template>
@@ -91,9 +76,15 @@
   </section>
   <section>
     <Transaction
-      v-for="transaction in transactions"
+      v-for="(transaction, i) in transactions"
       :key="transaction.id"
+      :is-pending="isPending && i === transactionsRowIndex"
       :transaction="transaction"
+      @handle-delete="_deleteTransaction(transaction.id!)"
+    />
+    <UDivider
+      class="my-6"
+      label="Por Datas"
     />
     <template
       v-for="(transactionsOnDay, date) in transactionsGroupByDate"
@@ -110,5 +101,4 @@
       />
     </template>
   </section>
-  <section>{{ JSON.stringify(transactionsGroupByDate) }}</section>
 </template>
