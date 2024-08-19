@@ -14,20 +14,11 @@
     isPending,
     transactions,
     transactionsGroupByDate,
+    transactionsRowIndex,
     fetchTransactions,
     deleteTransaction,
   } = useTransactions()
   const selectedView = ref(transactionViewOptions[2])
-  const transactionsRowIndex = ref(-1)
-
-  const _deleteTransaction = async (id: number) => {
-    transactionsRowIndex.value = transactions.value.findIndex(
-      (item) => item.id === id,
-    )
-    console.log(id, transactionsRowIndex)
-    await deleteTransaction(id)
-    transactionsRowIndex.value = -1
-  }
 
   await fetchTransactions()
 </script>
@@ -80,7 +71,7 @@
       :key="transaction.id"
       :is-pending="isPending && i === transactionsRowIndex"
       :transaction="transaction"
-      @handle-delete="_deleteTransaction(transaction.id!)"
+      @handle-delete="deleteTransaction(transaction.id!)"
     />
     <UDivider
       class="my-6"

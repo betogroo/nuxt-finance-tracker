@@ -9,7 +9,6 @@
   const $emit = defineEmits<{
     'handle-delete': [transaction_id: number]
   }>()
-
   const { type, amount, category, description } = toRefs(props.transaction)
 
   const items = ref([

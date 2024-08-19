@@ -15,6 +15,7 @@ const useTransactions = () => {
   const toast = useToast()
 
   const transactions = ref<Transaction[]>([])
+  const transactionsRowIndex = ref(-1)
 
   const fetchTransactions = async () => {
     isPending.value = true
@@ -36,6 +37,9 @@ const useTransactions = () => {
   }
 
   const deleteTransaction = async (id: number) => {
+    transactionsRowIndex.value = transactions.value.findIndex(
+      (item) => item.id === id,
+    )
     isPending.value = true
     try {
       await delay(2000, 'testing deleteTransaction')
@@ -57,6 +61,7 @@ const useTransactions = () => {
       console.log(e)
     } finally {
       isPending.value = false
+      transactionsRowIndex.value = -1
     }
   }
 
@@ -79,6 +84,7 @@ const useTransactions = () => {
     error,
     transactions,
     transactionsGroupByDate,
+    transactionsRowIndex,
     fetchTransactions,
     deleteTransaction,
   }
