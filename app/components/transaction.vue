@@ -5,9 +5,7 @@
     transaction: Transaction
   }
   const props = defineProps<Props>()
-  const { id, created_at, type, amount, category, description } = toRefs(
-    props.transaction,
-  )
+  const { type, amount, category, description } = toRefs(props.transaction)
 
   const items = ref([
     [
@@ -44,8 +42,8 @@
     <div class="flex-center justify-between">
       <div class="flex-center space-x-1">
         <UIcon
-          :name="transactionTypeStyle.icon"
           :class="transactionTypeStyle.color"
+          :name="transactionTypeStyle.icon"
         />
         <div>{{ description }}</div>
       </div>
@@ -67,8 +65,8 @@
         >
           <UButton
             color="white"
-            variant="ghost"
             trailing-icon="i-heroicons-ellipsis-horizontal"
+            variant="ghost"
           />
         </UDropdown>
       </div>

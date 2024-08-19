@@ -18,7 +18,7 @@
      .from('transactions')
      .select('*') */
   const transactions = ref<Transaction[]>([])
-  const { data, status } = await useAsyncData('transactions', async () => {
+  const { data } = await useAsyncData('transactions', async () => {
     const { data, error } = await supabase
       .from('transactions')
       .select('*')
@@ -33,7 +33,7 @@
   transactions.value = data.value ?? []
 
   const transactionsGroupByDate = computed(() => {
-    let grouped: Record<string, Transaction[]> = {}
+    const grouped: Record<string, Transaction[]> = {}
 
     for (const transaction of transactions.value as Transaction[]) {
       const date =
@@ -61,32 +61,32 @@
     class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 sm:gap-16 mb-10"
   >
     <Trend
-      title="Income"
-      color="green"
       :amount="4000"
+      color="green"
       :last-amount="3000"
       :loading="false"
+      title="Income"
     />
     <Trend
-      title="Expense"
-      color="red"
       :amount="3000"
+      color="red"
       :last-amount="1523"
       :loading="false"
+      title="Expense"
     />
     <Trend
-      color="green"
-      title="Investments"
       :amount="2500"
+      color="green"
       :last-amount="2750"
       :loading="false"
+      title="Investments"
     />
     <Trend
-      color="red"
-      title="Saving"
       :amount="0"
+      color="red"
       :last-amount="0"
       :loading="false"
+      title="Saving"
     />
   </section>
   <section>
@@ -95,7 +95,10 @@
       :key="transaction.id"
       :transaction="transaction"
     />
-    <template v-for="(transactionsOnDay, date) in transactionsGroupByDate">
+    <template
+      v-for="(transactionsOnDay, date) in transactionsGroupByDate"
+      :key="date"
+    >
       <DailyTransactionSummary
         :date="date"
         :transactions="transactionsOnDay"
