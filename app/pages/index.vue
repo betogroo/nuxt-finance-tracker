@@ -14,7 +14,7 @@
     isPending,
     transactions,
     transactionsGroupByDate,
-    transactionsRowIndex,
+    pendingTransactionId,
     fetchTransactions,
     deleteTransaction,
   } = useTransactions()
@@ -67,9 +67,9 @@
   </section>
   <section>
     <Transaction
-      v-for="(transaction, i) in transactions"
+      v-for="transaction in transactions"
       :key="transaction.id"
-      :is-pending="isPending && i === transactionsRowIndex"
+      :is-pending="isPending && transaction.id === pendingTransactionId"
       :transaction="transaction"
       @handle-delete="deleteTransaction(transaction.id!)"
     />
@@ -88,7 +88,9 @@
       <Transaction
         v-for="transaction in transactionsOnDay"
         :key="transaction.id"
+        :is-pending="isPending && transaction.id === pendingTransactionId"
         :transaction="transaction"
+        @handle-delete="deleteTransaction(transaction.id!)"
       />
     </template>
   </section>

@@ -8,7 +8,7 @@ const useTransactions = () => {
   const { showToast, delay, handleError } = useUtils()
 
   const transactions = ref<Transaction[]>([])
-  const transactionsRowIndex = ref(-1)
+  const pendingTransactionId = ref(-1)
 
   const fetchTransactions = async () => {
     isPending.value = true
@@ -29,9 +29,7 @@ const useTransactions = () => {
   }
 
   const deleteTransaction = async (id: number) => {
-    transactionsRowIndex.value = transactions.value.findIndex(
-      (item) => item.id === id,
-    )
+    pendingTransactionId.value = id
     isPending.value = true
     try {
       await delay(1000, 'testing deleteTransaction')
@@ -41,12 +39,12 @@ const useTransactions = () => {
         .eq('id', id)
       if (error) throw error
       await fetchTransactions()
-      showToast('success', 'Registro Excluído')
+      showToast('success', `Registro Excluído (${id})`)
     } catch (err) {
       handleError(err, 'Erro ao tentar excluir a transação')
     } finally {
       isPending.value = false
-      transactionsRowIndex.value = -1
+      pendingTransactionId.value = -1
     }
   }
 
@@ -69,7 +67,7 @@ const useTransactions = () => {
     error,
     transactions,
     transactionsGroupByDate,
-    transactionsRowIndex,
+    pendingTransactionId,
     fetchTransactions,
     deleteTransaction,
   }
