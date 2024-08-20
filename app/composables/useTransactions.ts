@@ -1,35 +1,27 @@
 import { ref } from 'vue'
 import type { Transaction } from '~/models/finance-tracker'
 
-const delay = (amount = 800, msg: boolean | string = false): Promise<void> => {
-  if (msg) {
-    console.log(msg)
-  }
-  return new Promise((resolve) => setTimeout(resolve, amount))
-}
-
 const useTransactions = () => {
   const isPending = ref<boolean>(false)
   const error = ref(null)
   const supabase = useSupabaseClient()
-  const toast = useToast()
+  const { showToast, delay, handleError } = useUtils()
 
   const transactions = ref<Transaction[]>([])
   const transactionsRowIndex = ref(-1)
 
   const fetchTransactions = async () => {
     isPending.value = true
-
     try {
-      isPending.value = true
-      const { data } = await supabase
+      await delay(1000)
+      const { data, error } = await supabase
         .from('transactions')
         .select('*')
         .returns<Transaction[]>()
+      if (error) throw error
       transactions.value = data ?? []
     } catch (err) {
       const e = err as Error
-      console.log(e)
       console.log(e)
     } finally {
       isPending.value = false
@@ -42,23 +34,16 @@ const useTransactions = () => {
     )
     isPending.value = true
     try {
-      await delay(2000, 'testing deleteTransaction')
-      await supabase.from('transactions').delete().eq('id', id)
-      toast.add({
-        title: 'Registro Deletado',
-        icon: 'i-heroicons-check-circle',
-        color: 'green',
-        timeout: 1000,
-      })
+      await delay(1000, 'testing deleteTransaction')
+      const { error } = await supabase
+        .from('transactions')
+        .delete()
+        .eq('id', id)
+      if (error) throw error
+      await fetchTransactions()
+      showToast('success', 'Registro Excluído')
     } catch (err) {
-      toast.add({
-        title: 'Erro ao Excluir',
-        icon: 'i-heroicons-exclamation-circle',
-        color: 'red',
-      })
-      const e = err as Error
-      isPending.value = false
-      console.log(e)
+      handleError(err, 'Erro ao tentar excluir a transação')
     } finally {
       isPending.value = false
       transactionsRowIndex.value = -1
