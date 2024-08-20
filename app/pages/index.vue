@@ -40,28 +40,28 @@
       :amount="4000"
       color="green"
       :last-amount="3000"
-      :loading="false"
+      :loading="isPending"
       title="Income"
     />
     <Trend
       :amount="3000"
       color="red"
       :last-amount="1523"
-      :loading="false"
+      :loading="isPending"
       title="Expense"
     />
     <Trend
       :amount="2500"
       color="green"
       :last-amount="2750"
-      :loading="false"
+      :loading="isPending"
       title="Investments"
     />
     <Trend
       :amount="0"
       color="red"
       :last-amount="0"
-      :loading="false"
+      :loading="isPending"
       title="Saving"
     />
   </section>
