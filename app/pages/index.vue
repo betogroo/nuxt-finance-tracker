@@ -24,13 +24,8 @@
   } = useTransactions()
   const selectedView = ref(transactionViewOptions[2])
 
-  await fetchTransactions()
-  watch(incomeTotal, (newVal) => {
-    console.log('incomeTotal mudou:', newVal)
-  })
-
-  watch(expenseTotal, (newVal) => {
-    console.log('expenseTotal mudou:', newVal)
+  onMounted(async () => {
+    await fetchTransactions()
   })
 </script>
 
@@ -79,7 +74,14 @@
   <section class="flex justify-between items-center mb-10">
     <div>
       <h2 class="text-2xl font-extrabold">Transactions</h2>
-      <div class="text-gray-500 dark:text-gray-400">
+      <USkeleton
+        v-if="isPending"
+        class="h-5 w-96"
+      />
+      <div
+        v-else
+        class="text-gray-500 dark:text-gray-400"
+      >
         Voce tem {{ incomeCount }} entradas e {{ expenseCount }} despesas neste
         período
       </div>
