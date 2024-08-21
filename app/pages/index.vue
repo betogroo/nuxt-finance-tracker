@@ -12,20 +12,31 @@
 
   const {
     isPending,
-    transactions,
+
     transactionsGroupByDate,
     pendingTransactionId,
+    incomeTotal,
+    expenseTotal,
+    incomeCount,
+    expenseCount,
     fetchTransactions,
     deleteTransaction,
   } = useTransactions()
   const selectedView = ref(transactionViewOptions[2])
 
   await fetchTransactions()
+  watch(incomeTotal, (newVal) => {
+    console.log('incomeTotal mudou:', newVal)
+  })
+
+  watch(expenseTotal, (newVal) => {
+    console.log('expenseTotal mudou:', newVal)
+  })
 </script>
 
 <template>
   <section class="flex justify-between items-center mb-0">
-    <h1 class="text-4xl font-extrabold">Summary</h1>
+    <h1 class="text-4xl font-extrabold mb-4">Summary</h1>
     <div>
       <USelectMenu
         v-model="selectedView"
@@ -37,14 +48,14 @@
     class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 sm:gap-16 mb-10"
   >
     <Trend
-      :amount="4000"
+      :amount="incomeTotal"
       color="green"
       :last-amount="3000"
       :loading="isPending"
       title="Income"
     />
     <Trend
-      :amount="3000"
+      :amount="expenseTotal"
       color="red"
       :last-amount="1523"
       :loading="isPending"
@@ -65,18 +76,23 @@
       title="Saving"
     />
   </section>
+  <section class="flex justify-between items-center mb-10">
+    <div>
+      <h2 class="text-2xl font-extrabold">Transactions</h2>
+      <div class="text-gray-500 dark:text-gray-400">
+        Voce tem {{ incomeCount }} entradas e {{ expenseCount }} despesas neste
+        período
+      </div>
+    </div>
+    <div>
+      <UButton
+        color="white"
+        icon="i-heroicons-plus-circle"
+        variant="solid"
+      />
+    </div>
+  </section>
   <section>
-    <Transaction
-      v-for="transaction in transactions"
-      :key="transaction.id"
-      :is-pending="isPending && transaction.id === pendingTransactionId"
-      :transaction="transaction"
-      @handle-delete="deleteTransaction(transaction.id!)"
-    />
-    <UDivider
-      class="my-6"
-      label="Por Datas"
-    />
     <template
       v-for="(transactionsOnDay, date) in transactionsGroupByDate"
       :key="date"

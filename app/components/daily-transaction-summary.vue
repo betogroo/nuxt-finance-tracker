@@ -16,18 +16,18 @@
     }
     return sum
   })
-  const { currency } = useCurrency(sum.value)
+  const { formatCurrency } = useUtils()
 </script>
 
 <template>
   <div
-    class="grid grid-cols-2 py-4 border-b border-gray-200 dark:border-gray-800 text-gray-500 dark:text-gray-400 font-bold"
+    class="grid grid-cols-2 py-4 border-b border-gray-200 dark:border-gray-800 text-xl text-black dark:text-gray-400 font-extrabold"
   >
     <div class="flex-center justify-between">
       {{ date }}
     </div>
 
-    <div class="flex-center justify-end mr-10">{{ currency }}</div>
+    <div class="flex-center justify-end mr-10">{{ formatCurrency(sum) }}</div>
   </div>
 </template>
 

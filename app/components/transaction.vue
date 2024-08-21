@@ -27,7 +27,7 @@
     ],
   ])
 
-  const { currency } = useCurrency(amount.value)
+  const { formatCurrency } = useUtils()
   //const isIncome = computed(() => type.value === 'Income')
   const transactionTypeStyle = computed(() => {
     const isIncome = type.value === 'Income'
@@ -62,7 +62,9 @@
     </div>
 
     <div class="flex-center justify-end space-x-2">
-      <div :class="transactionTypeStyle.color">{{ currency }}</div>
+      <div :class="transactionTypeStyle.color">
+        {{ formatCurrency(amount) }}
+      </div>
       <div>
         <UDropdown
           :items="items"

@@ -7,24 +7,25 @@
     loading?: boolean
   }
   const props = defineProps<Props>()
-  const { amount, lastAmount } = props
+  const { amount, lastAmount } = toRefs(props)
 
-  const trendingUp = computed(() => amount >= lastAmount)
+  const trendingUp = computed(() => amount.value >= lastAmount.value)
   const icon = computed(() =>
     trendingUp.value
       ? 'i-heroicons-arrow-trending-up'
       : 'i-heroicons-arrow-trending-down',
   )
 
-  const { currency } = useCurrency(amount)
+  const { formatCurrency } = useUtils()
+
   const percentTrend = computed(() => {
-    if (amount === 0 || lastAmount === 0) return '∞%'
+    if (amount.value === 0 || lastAmount.value === 0) return '∞%'
     /* const bigger = Math.max(amount, lastAmount)
     const lower = Math.min(amount, lastAmount)
     const ratio = ((bigger - lower) / lower) * 100 */
 
-    const difference = Math.abs(amount - lastAmount)
-    const base = Math.min(amount, lastAmount)
+    const difference = Math.abs(amount.value - lastAmount.value)
+    const base = Math.min(amount.value, lastAmount.value)
     const percentageChange = (difference / base) * 100
     return `${percentageChange.toFixed(3)}%`
   })
@@ -43,7 +44,7 @@
         v-if="loading"
         class="h-8 w-full"
       />
-      <div v-else>{{ currency }}</div>
+      <div v-else>{{ formatCurrency(amount) }}</div>
     </div>
     <div>
       <USkeleton

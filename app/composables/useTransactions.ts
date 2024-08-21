@@ -19,6 +19,7 @@ const useTransactions = () => {
         .select('*')
         .returns<Transaction[]>()
       if (error) throw error
+      // transactions.value = reactive([...(data ?? [])])
       transactions.value = data ?? []
     } catch (err) {
       const e = err as Error
@@ -38,7 +39,11 @@ const useTransactions = () => {
         .delete()
         .eq('id', id)
       if (error) throw error
-      await fetchTransactions()
+      //await fetchTransactions()
+      // update transactions without fetch database
+      transactions.value = transactions.value.filter(
+        (transaction) => transaction.id !== id,
+      )
       showToast('success', `Registro Excluído (${id})`)
     } catch (err) {
       handleError(err, 'Erro ao tentar excluir a transação')
@@ -62,12 +67,38 @@ const useTransactions = () => {
     return grouped
   })
 
+  const incomeTransactions = computed(() =>
+    transactions.value.filter((transaction) => transaction.type === 'Income'),
+  )
+  const expenseTransactions = computed(() =>
+    transactions.value.filter((transaction) => transaction.type === 'Expense'),
+  )
+
+  const incomeTotal = computed(() =>
+    transactions.value
+      .filter((transaction) => transaction.type === 'Income')
+      .reduce((sum, transaction) => sum + transaction.amount, 0),
+  )
+  const expenseTotal = computed(() =>
+    expenseTransactions.value.reduce(
+      (sum, transaction) => sum + transaction.amount,
+      0,
+    ),
+  )
+
+  const incomeCount = computed(() => incomeTransactions.value.length)
+  const expenseCount = computed(() => expenseTransactions.value.length)
+
   return {
     isPending,
     error,
     transactions,
     transactionsGroupByDate,
     pendingTransactionId,
+    incomeTotal,
+    expenseTotal,
+    incomeCount,
+    expenseCount,
     fetchTransactions,
     deleteTransaction,
   }
