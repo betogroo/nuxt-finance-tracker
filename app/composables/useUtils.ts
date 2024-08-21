@@ -34,7 +34,14 @@ const useUtils = () => {
     }
     return new Promise((resolve) => setTimeout(resolve, amount))
   }
-  return { delay, showToast, handleError }
+
+  const formatCurrency = (value: number): string => {
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL',
+    }).format(value)
+  }
+  return { delay, showToast, handleError, formatCurrency }
 }
 
 export default useUtils
