@@ -42,7 +42,7 @@
 
 <template>
   <div
-    class="grid grid-cols-2 py-4 border-b border-gray-200 dark:border-gray-800 text-gray-900 dark:text-gray-100"
+    class="grid grid-cols-2 pb-1 border-b border-gray-200 dark:border-gray-800 text-gray-900 dark:text-gray-100"
   >
     <div class="flex-center justify-between">
       <div class="flex-center space-x-1">
