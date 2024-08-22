@@ -12,6 +12,7 @@
     "lint:fix": "eslint . --fix"
   },
   "dependencies": {
+    "@formkit/tempo": "^0.1.2",
     "nuxt": "^3.12.4",
     "vue": "latest",
     "zod": "^3.23.8"
