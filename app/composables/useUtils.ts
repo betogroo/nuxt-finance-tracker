@@ -1,3 +1,5 @@
+import { format } from '@formkit/tempo'
+
 const useUtils = () => {
   const toast = useToast()
 
@@ -34,7 +36,18 @@ const useUtils = () => {
     }
     return new Promise((resolve) => setTimeout(resolve, amount))
   }
-  return { delay, showToast, handleError }
+
+  const formatCurrency = (value: number): string => {
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL',
+    }).format(value)
+  }
+
+  const dateBr = (date: string, dateFormat: string = 'medium') =>
+    format(date, dateFormat)
+
+  return { delay, showToast, handleError, formatCurrency, dateBr }
 }
 
 export default useUtils

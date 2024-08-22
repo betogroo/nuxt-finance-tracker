@@ -8,7 +8,7 @@ const useTransactions = () => {
   const { showToast, delay, handleError } = useUtils()
 
   const transactions = ref<Transaction[]>([])
-  const transactionsRowIndex = ref(-1)
+  const pendingTransactionId = ref(-1)
 
   const fetchTransactions = async () => {
     isPending.value = true
@@ -19,6 +19,7 @@ const useTransactions = () => {
         .select('*')
         .returns<Transaction[]>()
       if (error) throw error
+      // transactions.value = reactive([...(data ?? [])])
       transactions.value = data ?? []
     } catch (err) {
       const e = err as Error
@@ -29,9 +30,7 @@ const useTransactions = () => {
   }
 
   const deleteTransaction = async (id: number) => {
-    transactionsRowIndex.value = transactions.value.findIndex(
-      (item) => item.id === id,
-    )
+    pendingTransactionId.value = id
     isPending.value = true
     try {
       await delay(1000, 'testing deleteTransaction')
@@ -40,13 +39,17 @@ const useTransactions = () => {
         .delete()
         .eq('id', id)
       if (error) throw error
-      await fetchTransactions()
-      showToast('success', 'Registro Excluído')
+      //await fetchTransactions()
+      // update transactions without fetch database
+      transactions.value = transactions.value.filter(
+        (transaction) => transaction.id !== id,
+      )
+      showToast('success', `Registro Excluído (${id})`)
     } catch (err) {
       handleError(err, 'Erro ao tentar excluir a transação')
     } finally {
       isPending.value = false
-      transactionsRowIndex.value = -1
+      pendingTransactionId.value = -1
     }
   }
 
@@ -64,12 +67,38 @@ const useTransactions = () => {
     return grouped
   })
 
+  const incomeTransactions = computed(() =>
+    transactions.value.filter((transaction) => transaction.type === 'Income'),
+  )
+  const expenseTransactions = computed(() =>
+    transactions.value.filter((transaction) => transaction.type === 'Expense'),
+  )
+
+  const incomeTotal = computed(() =>
+    transactions.value
+      .filter((transaction) => transaction.type === 'Income')
+      .reduce((sum, transaction) => sum + transaction.amount, 0),
+  )
+  const expenseTotal = computed(() =>
+    expenseTransactions.value.reduce(
+      (sum, transaction) => sum + transaction.amount,
+      0,
+    ),
+  )
+
+  const incomeCount = computed(() => incomeTransactions.value.length)
+  const expenseCount = computed(() => expenseTransactions.value.length)
+
   return {
     isPending,
     error,
     transactions,
     transactionsGroupByDate,
-    transactionsRowIndex,
+    pendingTransactionId,
+    incomeTotal,
+    expenseTotal,
+    incomeCount,
+    expenseCount,
     fetchTransactions,
     deleteTransaction,
   }
