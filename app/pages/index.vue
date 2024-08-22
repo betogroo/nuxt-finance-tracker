@@ -10,9 +10,10 @@
     icon: 'i-mdi-home',
   })
 
+  const isOpen = ref(false)
+
   const {
     isPending,
-
     transactionsGroupByDate,
     pendingTransactionId,
     incomeTotal,
@@ -87,10 +88,18 @@
       </div>
     </div>
     <div>
+      <UModal v-model="isOpen">
+        <UCard>
+          <template #header> Add Transaction </template>
+          <div>Hello</div>
+          <template #footer />
+        </UCard>
+      </UModal>
       <UButton
         color="white"
         icon="i-heroicons-plus-circle"
         variant="solid"
+        @click="isOpen = true"
       />
     </div>
   </section>
