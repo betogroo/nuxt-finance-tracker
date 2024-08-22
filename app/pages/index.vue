@@ -88,13 +88,7 @@
       </div>
     </div>
     <div>
-      <UModal v-model="isOpen">
-        <UCard>
-          <template #header> Add Transaction </template>
-          <div>Hello</div>
-          <template #footer />
-        </UCard>
-      </UModal>
+      <ModalAddTransaction v-model="isOpen" />
       <UButton
         color="white"
         icon="i-heroicons-plus-circle"
