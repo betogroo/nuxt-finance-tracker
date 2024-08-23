@@ -1,21 +1,33 @@
 <script setup lang="ts">
   import { categories, types } from '~/constants'
+  import type { Transaction } from '~/models/finance-tracker'
+  import { schema as transactionSchema } from '~/models/finance-tracker'
+
   const isOpen = ref(true)
 
-  const state = ref({
+  const state = ref<Partial<Transaction>>({
     type: undefined,
     amount: 0,
-    created_at: undefined,
     description: undefined,
-    category: undefined,
   })
+
+  const form = ref()
+
+  const onSubmit = async () => {
+    form.value.validate()
+  }
 </script>
 
 <template>
   <UModal v-model="isOpen">
     <UCard>
       <template #header> Adicionar Registro </template>
-      <UForm :state="state">
+      <UForm
+        ref="form"
+        :schema="transactionSchema"
+        :state="state"
+        @submit.prevent="onSubmit"
+      >
         <UFormGroup
           class="mb-4"
           label="Tipo de Registro"
@@ -64,10 +76,10 @@
             variant="outline"
         /></UFormGroup>
         <UFormGroup
+          v-if="state.type === 'Expense'"
           class="mb-4"
           label="Categoria"
           name="category"
-          :required="true"
         >
           <USelect
             v-model="state.category"
