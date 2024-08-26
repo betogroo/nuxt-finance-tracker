@@ -5,16 +5,33 @@
 
   const isOpen = ref(true)
 
-  const state = ref<Partial<Transaction>>({
+  const initialState: Partial<Transaction> = {
     type: undefined,
     amount: 0,
     description: undefined,
+    category: undefined,
+    created_at: '',
+  }
+
+  const state = ref({
+    ...initialState,
   })
+
+  const resetCategory = () => {
+    if (state.value.type !== 'Expense') state.value.category = undefined
+  }
+
+  const resetForm = () => {
+    Object.assign(state.value, initialState)
+  }
 
   const form = ref()
 
   const onSubmit = async () => {
     form.value.validate()
+    //if (form.value.errors.length) return
+
+    console.log(state.value)
   }
 </script>
 
@@ -33,6 +50,7 @@
           label="Tipo de Registro"
           name="type"
           :required="true"
+          @change="resetCategory"
         >
           <USelect
             v-model="state.type"
@@ -90,6 +108,11 @@
           color="black"
           type="submit"
           >Adicionar</UButton
+        >
+        <UButton
+          color="red"
+          @click="resetForm"
+          >Limpar</UButton
         >
       </UForm>
       <template #footer />
