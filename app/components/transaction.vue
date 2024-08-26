@@ -42,10 +42,10 @@
 
 <template>
   <div
-    class="grid grid-cols-2 pb-1 border-b border-gray-200 dark:border-gray-800 text-gray-900 dark:text-gray-100"
+    class="grid grid-cols-3 pb-1 border-b border-gray-200 dark:border-gray-800 text-gray-900 dark:text-gray-100"
   >
-    <div class="flex-center justify-between">
-      <div class="flex-center space-x-1">
+    <div class="flex items-center justify-between space-x-4 col-span-2">
+      <div class="flex items-center space-x-1">
         <UIcon
           :class="transactionTypeStyle.color"
           :name="transactionTypeStyle.icon"
