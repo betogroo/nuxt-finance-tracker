@@ -1,5 +1,6 @@
 import { ref } from 'vue'
 import type { Transaction } from '~/models/finance-tracker'
+import { schema } from '~/models/finance-tracker'
 
 const useTransactions = () => {
   const isPending = ref<boolean>(false)
@@ -9,6 +10,31 @@ const useTransactions = () => {
 
   const transactions = ref<Transaction[]>([])
   const pendingTransactionId = ref(-1)
+
+  const updateTransactionsList = (id: number) => {
+    transactions.value = transactions.value.filter(
+      (transaction) => transaction.id !== id,
+    )
+  }
+
+  const addTransaction = async (data: Partial<Transaction>) => {
+    isPending.value = true
+    try {
+      await delay(1000)
+      const parsedData = schema.parse(data) as Transaction
+      const { error } = await supabase.from('transactions').upsert({
+        ...parsedData,
+      })
+
+      if (error) throw error
+      await delay(2000)
+      showToast('success', `Caastrato efetuado`)
+    } catch (err) {
+      handleError(err, 'Erro ao tentar excluir a transação')
+    } finally {
+      isPending.value = false
+    }
+  }
 
   const fetchTransactions = async () => {
     isPending.value = true
@@ -42,9 +68,10 @@ const useTransactions = () => {
       if (error) throw error
       //await fetchTransactions()
       // update transactions without fetch database
-      transactions.value = transactions.value.filter(
+      /* transactions.value = transactions.value.filter(
         (transaction) => transaction.id !== id,
-      )
+      ) */
+      updateTransactionsList(id)
       showToast('success', `Registro Excluído (${id})`)
     } catch (err) {
       handleError(err, 'Erro ao tentar excluir a transação')
@@ -95,20 +122,31 @@ const useTransactions = () => {
       0,
     ),
   )
-
   const incomeCount = computed(() => incomeTransactions.value.length)
   const expenseCount = computed(() => expenseTransactions.value.length)
 
+  const refresh = async () => {
+    await fetchTransactions()
+  }
+
   return {
-    isPending,
+    pending: {
+      isPending,
+      pendingTransactionId,
+    },
     error,
-    transactions,
-    transactionsGroupByDate,
-    pendingTransactionId,
-    incomeTotal,
-    expenseTotal,
-    incomeCount,
-    expenseCount,
+    transactions: {
+      all: transactions,
+      grouped: {
+        byDate: transactionsGroupByDate,
+      },
+      incomeTotal,
+      expenseTotal,
+      incomeCount,
+      expenseCount,
+      refresh,
+    },
+    addTransaction,
     fetchTransactions,
     deleteTransaction,
   }

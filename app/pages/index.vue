@@ -1,6 +1,9 @@
 <script setup lang="ts">
   import { transactionViewOptions } from '~/constants'
   import useTransactions from '~/composables/useTransactions'
+  import { ModalAddTransaction } from '#components'
+
+  const modal = useModal()
 
   definePageMeta({
     showInNavBar: true,
@@ -10,23 +13,29 @@
     icon: 'i-mdi-home',
   })
 
-  const isOpen = ref(false)
-
   const {
-    isPending,
-    transactionsGroupByDate,
-    pendingTransactionId,
-    incomeTotal,
-    expenseTotal,
-    incomeCount,
-    expenseCount,
-    fetchTransactions,
+    pending: { isPending, pendingTransactionId },
+    transactions: {
+      incomeCount,
+      incomeTotal,
+      expenseCount,
+      expenseTotal,
+      refresh,
+      grouped: { byDate },
+    },
     deleteTransaction,
   } = useTransactions()
+  const openModal = () => {
+    modal.open(ModalAddTransaction, {
+      async onSuccess() {
+        await refresh()
+      },
+    })
+  }
   const selectedView = ref(transactionViewOptions[2])
 
   onMounted(async () => {
-    await fetchTransactions()
+    await refresh()
   })
 </script>
 
@@ -88,18 +97,18 @@
       </div>
     </div>
     <div>
-      <ModalAddTransaction v-model="isOpen" />
+      <ModalAddTransaction @saved="console.log('saved')" />
       <UButton
         color="white"
         icon="i-heroicons-plus-circle"
         variant="solid"
-        @click="isOpen = true"
+        @click="openModal"
       />
     </div>
   </section>
   <section>
     <template
-      v-for="(transactionsOnDay, date) in transactionsGroupByDate"
+      v-for="(transactionsOnDay, date) in byDate"
       :key="date"
     >
       <DailyTransactionSummary

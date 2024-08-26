@@ -3,7 +3,12 @@
   import type { Transaction } from '~/models/finance-tracker'
   import { schema as transactionSchema } from '~/models/finance-tracker'
 
-  const isOpen = ref(true)
+  const $emit = defineEmits<{
+    success: []
+  }>()
+
+  const { addTransaction } = useTransactions()
+  const modal = useModal()
 
   const initialState: Partial<Transaction> = {
     type: undefined,
@@ -28,15 +33,15 @@
   const form = ref()
 
   const onSubmit = async () => {
-    form.value.validate()
-    //if (form.value.errors.length) return
-
-    console.log(state.value)
+    if (form.value.errors.length) return
+    await addTransaction(state.value)
+    modal.close()
+    $emit('success')
   }
 </script>
 
 <template>
-  <UModal v-model="isOpen">
+  <UModal>
     <UCard>
       <template #header> Adicionar Registro </template>
       <UForm
