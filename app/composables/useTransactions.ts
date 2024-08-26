@@ -17,6 +17,7 @@ const useTransactions = () => {
       const { data, error } = await supabase
         .from('transactions')
         .select('*')
+        .order('created_at', { ascending: false })
         .returns<Transaction[]>()
       if (error) throw error
       // transactions.value = reactive([...(data ?? [])])
@@ -65,6 +66,15 @@ const useTransactions = () => {
       grouped[date].push(transaction)
     }
     return grouped
+    /* 
+    sort on frontend
+    const sortedKeys = Object.keys(grouped).sort().reverse()
+    const sortedGroup: Record<string, Transaction[]> = {}
+
+    for (const key of sortedKeys) {
+      sortedGroup[key] = grouped[key]
+    }
+    return sortedGroup */
   })
 
   const incomeTransactions = computed(() =>
